@@ -26,7 +26,7 @@ class RestAPI {
         iTunesApi = retrofit.create(ITunesApi::class.java)
     }
 
-    public fun getHotTracks(): Call<FeedResponseMain> {
+    fun getHotTracks(): Call<FeedResponseMain> {
         return iTunesApi.getTopTen()
     }
 }

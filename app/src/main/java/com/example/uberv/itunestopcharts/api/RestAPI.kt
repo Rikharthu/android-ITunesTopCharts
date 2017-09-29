@@ -1,7 +1,7 @@
 package com.example.uberv.itunestopcharts.api
 
 import com.example.uberv.itunestopcharts.BuildConfig
-import com.example.uberv.itunestopcharts.api.models.FeedResponseMain
+import com.example.uberv.itunestopcharts.api.models.Feed
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -26,7 +26,7 @@ class RestAPI {
         iTunesApi = retrofit.create(ITunesApi::class.java)
     }
 
-    fun getHotTracks(): Call<FeedResponseMain> {
-        return iTunesApi.getTopTen()
-    }
+//    fun getHotTracks(): Call<Feed> {
+//        return iTunesApi.getTopTen()
+//    }
 }

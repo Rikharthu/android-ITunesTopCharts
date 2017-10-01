@@ -79,6 +79,18 @@ class FeedDeserializer : JsonDeserializer<Feed> {
             // TODO ContentType
             // TODO Category
 
+            // TODO REFACTOR
+            val images = mutableListOf<Image>()
+            val imagesObj = entryObj.getAsJsonArray("im:image")
+            if (imagesObj != null) {
+                for (imageJson in imagesObj) {
+                    val image = Image(imageJson.asJsonObject.getLabel(),
+                            imageJson.asJsonObject.getAsJsonObjectOrNull("attributes")?.asJsonObject?.get("height")?.extractLong()?.toInt())
+                    images.add(image)
+                }
+            }
+
+
             return Entry(
                     name = name,
                     rights = rights,
@@ -89,7 +101,8 @@ class FeedDeserializer : JsonDeserializer<Feed> {
                     priceAmount = priceAmount,
                     priceCurrency = priceCurrency,
                     link = links,
-                    artist = artist
+                    artist = artist,
+                    image = images
             )
         } else {
             return null
@@ -108,6 +121,14 @@ class FeedDeserializer : JsonDeserializer<Feed> {
     private fun JsonObject?.getAsJsonObjectOrNull(memberName: String): JsonObject? {
         val element = this?.get(memberName)
         if (element != null && element is JsonObject) {
+            return element
+        }
+        return null
+    }
+
+    private fun JsonObject?.getAsJsonArrayOrNull(memberName: String): JsonArray? {
+        val element = this?.get(memberName)
+        if (element != null && element is JsonArray) {
             return element
         }
         return null

@@ -5,14 +5,16 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.support.v8.renderscript.Allocation
 import android.support.v8.renderscript.Element
 import android.support.v8.renderscript.RenderScript
 import android.support.v8.renderscript.ScriptIntrinsicBlur
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
+import android.widget.LinearLayout
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.uberv.itunestopcharts.api.RestAPI
 import com.example.uberv.itunestopcharts.api.models.Feed
@@ -28,13 +30,13 @@ import java.text.DateFormat
 
 class MainActivity : AppCompatActivity() {
 
+    var mMediaPlayer: MediaPlayer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
-        //TODO for debug
-        findViewById<Button>(R.id.crash_btn).setOnClickListener { throw RuntimeException("This is a crash!") }
 
         val feedJson = readFromAssets("topcharts.json", this)
 
@@ -52,13 +54,23 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Feed>?, response: Response<Feed>?) {
                 Timber.d(response?.body().toString())
                 val feed = response?.body()
-//                val inputBitmap = imageView.drawable.g
-                val previewUrl = feed?.entry?.get(1)?.link?.get(1)?.href
-                val mediaPlayer = MediaPlayer()
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-                mediaPlayer.setDataSource(previewUrl)
-                mediaPlayer.prepare() // might take long! (for buffering, etc)
-                mediaPlayer.start()
+
+                val recycler = findViewById<RecyclerView>(R.id.recycler)
+                recycler.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayout.VERTICAL, false)
+                val feedAdapter = TrackItemAdapter(feed!!.entry!!, {
+                    Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT)
+                    val previewUrl = it.link?.get(1)?.href
+                    if (mMediaPlayer != null) {
+                        mMediaPlayer?.stop()
+                        mMediaPlayer?.release()
+                    }
+                    mMediaPlayer = MediaPlayer()
+                    mMediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
+                    mMediaPlayer?.setDataSource(previewUrl)
+                    mMediaPlayer?.prepare() // might take long! (for buffering, etc)
+                    mMediaPlayer?.start()
+                })
+                recycler.adapter = feedAdapter
             }
 
             override fun onFailure(call: Call<Feed>?, t: Throwable?) {
@@ -66,10 +78,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
-        val textView = findViewById<TextView>(R.id.textview)
-        textView.isSelected = true
-
 
         val imageUrl = "http://is1.mzstatic.com/image/thumb/Music91/v4/b4/7b/02/b47b02f9-58c7-dd3a-c97e-6544bd9ad36a/UMG_cvrart_00602557680850_01_RGB72_1800x1800_17UMGIM98210.jpg/170x170bb-85.jpg";
         val imageView = findViewById<ImageView>(R.id.background_image)
@@ -85,6 +93,10 @@ class MainActivity : AppCompatActivity() {
             val output = Allocation.createFromBitmap(rs, blurry)
             blurScript.setRadius(blurRadius)
             blurScript.setInput(input)
+            blurScript.forEach(output)
+            blurScript.setInput(output)
+            blurScript.forEach(output)
+            blurScript.setInput(output)
             blurScript.forEach(output)
             output.copyTo(blurry)
 

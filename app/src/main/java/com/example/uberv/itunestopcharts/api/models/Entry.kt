@@ -1,7 +1,5 @@
 package com.example.uberv.itunestopcharts.api.models
 
-import android.media.Image
-
 data class Entry(
         var name: String? = null,
         var image: List<Image>? = null,

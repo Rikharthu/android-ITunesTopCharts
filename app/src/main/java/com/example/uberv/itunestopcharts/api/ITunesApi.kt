@@ -5,6 +5,6 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface ITunesApi {
-    @GET("/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=10/json")
+    @GET("/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=50/json")
     fun getTopTen(): Call<Feed>
 }

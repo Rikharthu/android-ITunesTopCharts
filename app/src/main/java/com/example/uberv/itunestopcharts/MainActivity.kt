@@ -1,5 +1,7 @@
 package com.example.uberv.itunestopcharts
 
+import android.app.Activity
+import android.arch.lifecycle.Observer
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -16,7 +18,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.example.uberv.itunestopcharts.api.ITunesApiService
 import com.example.uberv.itunestopcharts.api.RestAPI
+import com.example.uberv.itunestopcharts.api.models.ApiResponse
 import com.example.uberv.itunestopcharts.api.models.Feed
 import com.example.uberv.itunestopcharts.api.models.FeedDeserializer
 import com.example.uberv.itunestopcharts.utils.readFromAssets
@@ -26,17 +30,30 @@ import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 import java.text.DateFormat
+import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity() {
 
+    val component by lazy { app.component }
+
     var mMediaPlayer: MediaPlayer? = null
+    @Inject
+    lateinit var apiService: ITunesApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
+
+        component.inject(this)
+
+        // TODO for debug
+        val apiResponse = apiService.getTopTracks(7)
+        apiResponse.observe(this, Observer<ApiResponse<Feed>> {
+            Timber.d("onChanged")
+        })
+
 
         val feedJson = readFromAssets("topcharts.json", this)
 
@@ -109,4 +126,8 @@ class MainActivity : AppCompatActivity() {
 
         Timber.d(feedJson)
     }
+
+    // Extension property
+    val Activity.app: App
+        get() = application as App
 }

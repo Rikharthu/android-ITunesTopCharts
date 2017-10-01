@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.DateFormat
 
 class RestAPI {
-    private val iTunesApi: ITunesApi
+    private val mITunesApiService: ITunesApiService
 
 
     init {
@@ -33,10 +33,10 @@ class RestAPI {
                 .baseUrl("http://ax.itunes.apple.com/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
-        iTunesApi = retrofit.create(ITunesApi::class.java)
+        mITunesApiService = retrofit.create(ITunesApiService::class.java)
     }
 
     fun getHotTracks(): Call<Feed> {
-        return iTunesApi.getTopTen()
+        return mITunesApiService.getTopTen()
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.*
 import java.lang.reflect.Type
 
 class FeedDeserializer : JsonDeserializer<Feed> {
+
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Feed? {
         val feedJsonObj = json?.asJsonObject?.getAsJsonObject("feed")
         if (feedJsonObj != null) {

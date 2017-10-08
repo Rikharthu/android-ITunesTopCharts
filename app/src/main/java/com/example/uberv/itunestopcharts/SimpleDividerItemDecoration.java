@@ -2,6 +2,7 @@ package com.example.uberv.itunestopcharts;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -11,6 +12,14 @@ public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
 
     public SimpleDividerItemDecoration(Context context) {
         mDivider = context.getResources().getDrawable(R.drawable.line_divider);
+    }
+
+    public void setTint(int a, int r, int g, int b) {
+        mDivider.setTint(Color.argb(a, r, g, b));
+    }
+
+    public void setTint(int color) {
+        mDivider.setTint(color);
     }
 
     @Override

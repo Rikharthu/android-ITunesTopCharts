@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.uberv.itunestopcharts.api.models.Entry
+import com.example.uberv.itunestopcharts.api.models.Image
 import kotlinx.android.synthetic.main.music_item.view.*
 
 class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : RecyclerView.Adapter<TrackItemAdapter.ViewHolder>() {
@@ -23,7 +24,7 @@ class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : 
         val entry = items[position]
         holder.bind(entry)
         holder.itemView.setOnClickListener { listener(entry) }
-        holder.pos.text = (position+1).toString()
+        holder.pos.text = (position + 1).toString()
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -38,7 +39,13 @@ class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : 
             artist.text = entry.artist
             val images = entry.image
             if (images != null && images.isNotEmpty()) {
-                Glide.with(image).load(images.get(0).url).into(image)
+                var img: Image? = null
+                images.forEach {
+                    if (img == null || img!!.height!! < it.height!!) {
+                        img = it
+                    }
+                }
+                Glide.with(image).load(img?.url).into(image)
             }
         }
     }

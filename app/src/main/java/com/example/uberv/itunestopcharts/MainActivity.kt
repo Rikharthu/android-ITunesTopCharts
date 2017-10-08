@@ -66,6 +66,7 @@ class MainActivity : AnalyticsActivity() {
                 val feed = response?.body()
 
                 val recycler = findViewById<RecyclerView>(R.id.recycler)
+                recycler.addItemDecoration(SimpleDividerItemDecoration(this@MainActivity))
                 recycler.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayout.VERTICAL, false)
                 val feedAdapter = TrackItemAdapter(feed!!.entry!!, {
                     Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT)

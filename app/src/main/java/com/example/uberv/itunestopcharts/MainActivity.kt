@@ -37,7 +37,7 @@ class MainActivity : AnalyticsActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
+//        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
         component.inject(this)
 

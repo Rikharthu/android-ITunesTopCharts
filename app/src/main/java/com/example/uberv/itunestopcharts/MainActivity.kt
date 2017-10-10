@@ -2,12 +2,17 @@ package com.example.uberv.itunestopcharts
 
 import android.app.Activity
 import android.arch.lifecycle.Observer
+import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.renderscript.Allocation
+import android.renderscript.Element
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -19,6 +24,7 @@ import com.example.uberv.itunestopcharts.utils.createBlurryBackground
 import com.example.uberv.itunestopcharts.utils.readFromAssets
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,9 +72,9 @@ class MainActivity : AnalyticsActivity() {
                 val feed = response?.body()
 
                 val recycler = findViewById<RecyclerView>(R.id.recycler)
-                recycler.addItemDecoration(SimpleDividerItemDecoration(this@MainActivity).apply {
-                    setTint(220, 255, 255, 255)
-                })
+//                recycler.addItemDecoration(SimpleDividerItemDecoration(this@MainActivity).apply {
+//                    setTint(220, 255, 255, 255)
+//                })
                 recycler.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayout.VERTICAL, false)
                 val feedAdapter = TrackItemAdapter(feed!!.entry!!, {
                     Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT)
@@ -96,13 +102,58 @@ class MainActivity : AnalyticsActivity() {
                     val futureTarget = Glide.with(this@MainActivity).asBitmap().load(image!!.url)
                             .submit()
                     Thread {
-                        val image = createBlurryBackground(futureTarget.get(), imageView.width, imageView.height, this@MainActivity)
+                        val original = futureTarget.get()
+
+                        val outBitmap = original.copy(original.config, true)
+
+                        //Create the RenderScript context
+                        val rs = RenderScript.create(this@MainActivity)
+
+                        //Create allocations for input and output data
+                        val input = Allocation.createFromBitmap(rs, original,
+                                Allocation.MipmapControl.MIPMAP_NONE,
+                                Allocation.USAGE_SCRIPT)
+                        val output = Allocation.createTyped(rs, input.getType())
+
+                        //Run a blur at the maximum supported radius (25f)
+                        val script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+                        script.setRadius(4f)
+                        script.setInput(input)
+                        script.forEach(output)
+                        script.setInput(output)
+                        script.forEach(output)
+                        output.copyTo(outBitmap)
+
+                        //Tear down the RenderScript context
+                        rs.destroy()
+
                         runOnUiThread {
-                            imageView.setImageBitmap(image)
+//                            imageView.setImageBitmap(image)
+                            background_slide.setImagePair(original, outBitmap)
                         }
                     }.start()
                 })
                 recycler.adapter = feedAdapter
+
+                // TODO for debug
+                recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+                        Timber.d("onScrolled: $dx $dy")
+
+                        val firstItem = recyclerView.getChildAt(0)
+                        if (firstItem.tag == "HEADER") {
+                            // first item is header, thus it is still visible
+                            val topOffset = firstItem.top + firstItem.height
+                            Timber.d("First recycler item is header, offset=$topOffset")
+                            debug_view.layoutParams = ConstraintLayout.LayoutParams(100, topOffset)
+                            background_slide.setOverlayOffset(topOffset)
+                        }
+                    }
+                })
+
+                initializeImage()
+
             }
 
             override fun onFailure(call: Call<Feed>?, t: Throwable?) {
@@ -114,6 +165,35 @@ class MainActivity : AnalyticsActivity() {
 
 
         Timber.d(feedJson)
+    }
+
+    private fun initializeImage() {
+        val inBitmap = BitmapFactory.decodeResource(resources, R.drawable.grass)
+        val outBitmap = inBitmap.copy(inBitmap.config, true)
+
+        //Create the RenderScript context
+        val rs = RenderScript.create(this)
+
+        //Create allocations for input and output data
+        val input = Allocation.createFromBitmap(rs, inBitmap,
+                Allocation.MipmapControl.MIPMAP_NONE,
+                Allocation.USAGE_SCRIPT)
+        val output = Allocation.createTyped(rs, input.getType())
+
+        //Run a blur at the maximum supported radius (25f)
+        val script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+        script.setRadius(25f)
+        script.setInput(input)
+        script.forEach(output)
+        script.setInput(output)
+        script.forEach(output)
+        output.copyTo(outBitmap)
+
+        //Tear down the RenderScript context
+        rs.destroy()
+
+        //Apply the two copies to our custom ImageView for sliding
+        background_slide.setImagePair(inBitmap, outBitmap)
     }
 
     private fun logMusicPlayAnalytics(entry: Entry) {

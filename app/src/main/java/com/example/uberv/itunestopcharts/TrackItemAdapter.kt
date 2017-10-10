@@ -10,25 +10,45 @@ import com.bumptech.glide.Glide
 import com.example.uberv.itunestopcharts.api.models.Entry
 import com.example.uberv.itunestopcharts.api.models.Image
 import kotlinx.android.synthetic.main.music_item.view.*
+import timber.log.Timber
 
-class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : RecyclerView.Adapter<TrackItemAdapter.ViewHolder>() {
+class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.music_item, parent, false)
-        return ViewHolder(view)
+    val ITEM_TYPE_HEADER = 1
+
+    val ITEM_TYPE_TRACK = 2
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (viewType == ITEM_TYPE_HEADER) {
+
+        } else if (viewType == ITEM_TYPE_TRACK) {
+            return TrackViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.music_item, parent, false))
+        }
+        throw RuntimeException("There is no type that matches the type $viewType, make sure your using types correctly")
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = items.size + 1
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val entry = items[position]
-        holder.bind(entry)
-        holder.itemView.setOnClickListener { listener(entry) }
-        holder.pos.text = (position + 1).toString()
+    override fun getItemViewType(position: Int) = if (position == 0) ITEM_TYPE_HEADER else ITEM_TYPE_TRACK
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is TrackViewHolder) {
+            val entry = items[position]
+            holder.bind(entry)
+            holder.itemView.setOnClickListener { listener(entry) }
+            holder.pos.text = (position + 1).toString()
+        } else if (holder is HeaderViewHolder) {
+
+        } else {
+            Timber.e("No instance of ViewHolder found")
+        }
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+    }
+
+    class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.music_item_title
         val artist: TextView = itemView.music_item_artist
         val image: ImageView = itemView.music_item_image

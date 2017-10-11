@@ -191,6 +191,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "767960597013-eup0uv3st5q1a066lpl8a7ta6m33d0gj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uberv.itunestopcharts",
+            "certificate_hash": "278702eb02bec3495fef2c9329c5bf3af7a04da6"
+          }
+        },
+        {
           "client_id": "767960597013-87r0f2isi7pmqk2f1qcg6uh4js03auag.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

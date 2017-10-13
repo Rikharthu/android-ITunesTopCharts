@@ -22,7 +22,7 @@ class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : 
         Timber.d("Creating Viewholder")
         if (viewType == ITEM_TYPE_HEADER) {
             val headerView = LayoutInflater.from(parent.context).inflate(R.layout.feed_header, parent, false)
-            headerView.tag="HEADER"
+            headerView.tag = "HEADER"
             return HeaderViewHolder(headerView)
         } else if (viewType == ITEM_TYPE_TRACK) {
             return TrackViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.music_item, parent, false))
@@ -37,18 +37,17 @@ class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         Timber.d("Binding Viewholder")
         if (holder is TrackViewHolder) {
-            val trackPosition=position-1
+            val trackPosition = position - 1
             val entry = items[trackPosition]
             holder.bind(entry)
             holder.itemView.setOnClickListener { listener(entry) }
-            holder.pos.text = (trackPosition+1).toString()
+            holder.pos.text = (trackPosition + 1).toString()
         } else if (holder is HeaderViewHolder) {
             Timber.d("TODO - bind HeaderViewHolder")
         } else {
             Timber.e("No instance of ViewHolder found")
         }
     }
-
 
 
     class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -20,7 +20,6 @@ import com.bumptech.glide.Glide
 import com.example.uberv.itunestopcharts.api.ITunesApiService
 import com.example.uberv.itunestopcharts.api.RestAPI
 import com.example.uberv.itunestopcharts.api.models.*
-import com.example.uberv.itunestopcharts.utils.createBlurryBackground
 import com.example.uberv.itunestopcharts.utils.readFromAssets
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.GsonBuilder
@@ -128,7 +127,7 @@ class MainActivity : AnalyticsActivity() {
                         rs.destroy()
 
                         runOnUiThread {
-//                            imageView.setImageBitmap(image)
+                            //                            imageView.setImageBitmap(image)
                             background_slide.setImagePair(original, outBitmap)
                         }
                     }.start()

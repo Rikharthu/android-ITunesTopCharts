@@ -9,6 +9,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.uberv.itunestopcharts.api.models.Entry
 import com.example.uberv.itunestopcharts.api.models.Image
+import com.example.uberv.itunestopcharts.data.models.Track
+import com.example.uberv.itunestopcharts.data.models.asTrack
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.music_item.view.*
 import timber.log.Timber
 
@@ -76,6 +79,12 @@ class TrackItemAdapter(val items: List<Entry>, val listener: (Entry) -> Unit) : 
                 }
                 Glide.with(image).load(img?.url).into(image)
             }
+
+            // TODO for debug
+            val track = entry.asTrack()
+            val trackJson = Gson().toJson(track)
+            val track2 = Gson().fromJson(trackJson, Track::class.java)
+            val a = 4
         }
     }
 }

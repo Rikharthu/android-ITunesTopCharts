@@ -6,7 +6,7 @@ data class Entry(
         var link: List<Link>? = null,
         var collection: Collection? = null,
         var price: String? = null,
-        var priceAmount: Double? = null,
+        var priceAmount: Float? = null,
         var priceCurrency: String? = null,
         var contentType: ContentType? = null,
         var rights: String? = null,

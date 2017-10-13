@@ -67,7 +67,7 @@ class FeedDeserializer : JsonDeserializer<Feed> {
             val priceObj = entryObj.getAsJsonObjectOrNull("im:price")
             val price = priceObj?.getLabel()
             val priceAmount = priceObj.getAsJsonObjectOrNull("attributes")
-                    ?.get("amount")?.extractDouble()
+                    ?.get("amount")?.extractFloat()
             val priceCurrency = priceObj.getAsJsonObjectOrNull("attributes")
                     ?.get("currency")?.extractString()
             val links = extractLinks(entryObj)
@@ -79,6 +79,7 @@ class FeedDeserializer : JsonDeserializer<Feed> {
                     ?.getAsJsonObjectOrNull("attributes")?.getLabel()
             // TODO ContentType
             // TODO Category
+            // TODO collection
 
             // TODO REFACTOR
             val images = mutableListOf<Image>()
@@ -155,6 +156,10 @@ class FeedDeserializer : JsonDeserializer<Feed> {
 
     private fun JsonElement.extractDouble(): Double? {
         return extractString()?.toDouble()
+    }
+
+    private fun JsonElement.extractFloat(): Float? {
+        return extractString()?.toFloat()
     }
 
 //    private fun getLabel(jsonObj: JsonObject?): String? {

@@ -17,8 +17,7 @@ class FileTrackRepo(context: Context) : AbstractTrackRepo(context) {
     }
 
     private fun getFeedFile(): File {
-        val feedFile = File(context.filesDir, FEED_FILE_NAME)
-        return feedFile
+        return File(context.filesDir, FEED_FILE_NAME)
     }
 
     override fun getFeed(): Feed? {

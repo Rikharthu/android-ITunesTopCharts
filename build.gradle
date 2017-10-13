@@ -12,7 +12,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         classpath 'io.fabric.tools:gradle:1.24.2'
-        classpath 'com.google.gms:google-services:3.1.1'
+        classpath 'com.google.gms:google-services:3.1.0'
     }
 }
 
@@ -25,11 +25,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-ext{
-    gms_version='11.4.2'
-    arch_components_version='1.0.0-alpha9-1'
-    support_library_version='26.1.0'
-    dagger_version='2.11'
 }
